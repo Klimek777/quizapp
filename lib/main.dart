@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizapp/pages/game_page.dart';
+import 'package:quizapp/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromRGBO(31, 31, 31, 1.0),
         primarySwatch: Colors.blue,
       ),
-      home: GamePage(),
+      home: HomePage(),
     );
   }
 }

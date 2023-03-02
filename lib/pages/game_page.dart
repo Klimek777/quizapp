@@ -1,26 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quizapp/providers/game_page_provider.dart';
 
 class GamePage extends StatelessWidget {
+  final String difficultyLevel;
+
   double? _deviceHeigh, _deviceWidth;
 
+  GamePageProvider? _pageProvider;
+
+  GamePage({required this.difficultyLevel});
   @override
   Widget build(BuildContext context) {
     _deviceHeigh = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
 
-    return _buildUI();
+    return ChangeNotifierProvider(
+      create: (_context) =>
+          GamePageProvider(context: context, difficultyLevel: difficultyLevel),
+      child: _buildUI(),
+    );
   }
 
   Widget _buildUI() {
-    return Scaffold(
-      body: SafeArea(
-          child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: _deviceHeigh! * 0.05,
-        ),
-        child: _gameUI(),
-      )),
-    );
+    return Builder(builder: (_context) {
+      _pageProvider = _context.watch<GamePageProvider>();
+      if (_pageProvider!.questions != null) {
+        return Scaffold(
+          body: SafeArea(
+              child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: _deviceHeigh! * 0.05,
+            ),
+            child: _gameUI(),
+          )),
+        );
+      } else {
+        return const Center(
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
+        );
+      }
+    });
   }
 
   Widget _gameUI() {
@@ -44,8 +66,8 @@ class GamePage extends StatelessWidget {
   }
 
   Widget _questionText() {
-    return const Text(
-      'Test Question 1, Nothing Intereseting',
+    return Text(
+      _pageProvider!.getCurrentQuestionText(),
       style: TextStyle(
           color: Colors.white, fontSize: 25, fontWeight: FontWeight.w400),
     );
@@ -53,7 +75,9 @@ class GamePage extends StatelessWidget {
 
   Widget _trueButton() {
     return MaterialButton(
-      onPressed: () {},
+      onPressed: () {
+        _pageProvider?.answerQuestion("True");
+      },
       color: Colors.green,
       minWidth: _deviceWidth! * 0.80,
       height: _deviceHeigh! * 0.10,
@@ -66,7 +90,9 @@ class GamePage extends StatelessWidget {
 
   Widget _falseButton() {
     return MaterialButton(
-      onPressed: () {},
+      onPressed: () {
+        _pageProvider?.answerQuestion("False");
+      },
       color: Colors.red,
       minWidth: _deviceWidth! * 0.80,
       height: _deviceHeigh! * 0.10,
